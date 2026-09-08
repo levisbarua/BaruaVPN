@@ -94,36 +94,80 @@ class ServerListScreen extends ConsumerWidget {
                         ],
                       ),
                     )
-                  : ListView.builder(
-                      itemCount: servers.length,
-                      padding: const EdgeInsets.only(bottom: 24),
-                      itemBuilder: (context, index) {
-                        final server = servers[index];
-                        final isSelected = selectedServer?.id == server.id;
+                  : Builder(
+                      builder: (context) {
+                        final Map<String, List<ServerModel>> groupedServers = {
+                          'Europe (Fastest for You)': servers.where((s) => ['NL', 'NO', 'PL', 'RO', 'CH'].contains(s.countryCode)).toList(),
+                          'Americas': servers.where((s) => ['US', 'CA', 'MX'].contains(s.countryCode)).toList(),
+                          'Asia Pacific': servers.where((s) => ['JP', 'SG'].contains(s.countryCode)).toList(),
+                          'Other Locations': servers.where((s) => !['NL', 'NO', 'PL', 'RO', 'CH', 'US', 'CA', 'MX', 'JP', 'SG'].contains(s.countryCode)).toList(),
+                        };
 
-                        return ServerCard(
-                          server: server,
-                          isSelected: isSelected,
-                          onTap: () async {
-                            if (server.isPremium && !isUserPremium) {
-                              _showPremiumUpgradePrompt(context);
-                              return;
+                        final flattenedList = <dynamic>[];
+                        for (var entry in groupedServers.entries) {
+                          if (entry.value.isNotEmpty) {
+                            flattenedList.add(entry.key);
+                            flattenedList.addAll(entry.value);
+                          }
+                        }
+
+                        return ListView.builder(
+                          itemCount: flattenedList.length,
+                          padding: const EdgeInsets.only(bottom: 24),
+                          itemBuilder: (context, index) {
+                            final item = flattenedList[index];
+
+                            if (item is String) {
+                              return Padding(
+                                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                                child: Row(
+                                  children: [
+                                    if (item.contains('Fastest')) 
+                                      const Icon(Icons.speed_rounded, color: AppColors.primaryCyan, size: 18),
+                                    if (item.contains('Fastest')) 
+                                      const SizedBox(width: 8),
+                                    Text(
+                                      item.toUpperCase(),
+                                      style: const TextStyle(
+                                        color: AppColors.primaryCyan,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 1.2,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
                             }
 
-                            await ref.read(selectedServerProvider.notifier).selectServer(server);
+                            final server = item as ServerModel;
+                            final isSelected = selectedServer?.id == server.id;
 
-                            // If connected, automatically reconnect or update active tunnel
-                            if (vpnState.status == VpnStatus.connected) {
-                              await ref.read(vpnControllerProvider.notifier).reconnect(server);
-                            }
+                            return ServerCard(
+                              server: server,
+                              isSelected: isSelected,
+                              onTap: () async {
+                                if (server.isPremium && !isUserPremium) {
+                                  _showPremiumUpgradePrompt(context);
+                                  return;
+                                }
 
-                            if (context.mounted) {
-                              context.pop();
-                            }
-                          },
-                          onFavoriteToggle: () {
-                            ref.read(serverRepositoryProvider).toggleFavorite(server.id);
-                            ref.invalidate(serverListProvider);
+                                await ref.read(selectedServerProvider.notifier).selectServer(server);
+
+                                // If connected, automatically reconnect or update active tunnel
+                                if (vpnState.status == VpnStatus.connected) {
+                                  await ref.read(vpnControllerProvider.notifier).reconnect(server);
+                                }
+
+                                if (context.mounted) {
+                                  context.pop();
+                                }
+                              },
+                              onFavoriteToggle: () {
+                                ref.read(serverRepositoryProvider).toggleFavorite(server.id);
+                                ref.invalidate(serverListProvider);
+                              },
+                            );
                           },
                         );
                       },
