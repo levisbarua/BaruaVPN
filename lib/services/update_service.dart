@@ -55,7 +55,7 @@ class UpdateService {
     final maxLength = currentParts.length > latestParts.length ? currentParts.length : latestParts.length;
 
     for (int i = 0; i < maxLength; i++) {
-      final currentPart = i < currentParts.length ? currentParts.length : 0;
+      final currentPart = i < currentParts.length ? currentParts[i] : 0;
       final latestPart = i < latestParts.length ? latestParts[i] : 0;
 
       if (latestPart > currentPart) return true;
