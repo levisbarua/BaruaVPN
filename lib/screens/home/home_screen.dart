@@ -192,7 +192,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                       const SizedBox(width: 6),
 
-                      // Settings / Profile
+                      // Profile
+                      IconButton(
+                        icon: const Icon(Icons.person_outline_rounded, color: AppColors.textSecondary, size: 22),
+                        onPressed: () => context.push('/profile'),
+                      ),
+
+                      // Settings
                       IconButton(
                         icon: const Icon(Icons.settings_outlined, color: AppColors.textSecondary, size: 22),
                         onPressed: () => context.push('/settings'),

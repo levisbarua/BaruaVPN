@@ -98,12 +98,12 @@ class WireGuardVpnService implements VpnService {
         wgQuickConfig: '''[Interface]
 PrivateKey = $privateKey
 Address = $clientIpv4
-DNS = 10.2.0.1
+DNS = 1.1.1.1, 10.2.0.1
 
 [Peer]
 PublicKey = $publicKey
 Endpoint = $endpoint
-AllowedIPs = 0.0.0.0/0, ::/0
+AllowedIPs = 0.0.0.0/0
 PersistentKeepalive = 25
 ''',
         providerBundleIdentifier: 'com.baruavpn.app.networkextension',

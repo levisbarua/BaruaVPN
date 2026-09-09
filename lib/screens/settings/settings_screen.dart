@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/settings_provider.dart';
@@ -219,14 +220,24 @@ class SettingsScreen extends ConsumerWidget {
                       leading: const Icon(Icons.policy_rounded, color: AppColors.primaryCyan),
                       title: const Text('Privacy Policy', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
                       trailing: const Icon(Icons.open_in_new_rounded, color: AppColors.textMuted, size: 18),
-                      onTap: () {},
+                      onTap: () async {
+                        final Uri url = Uri.parse('https://baruavpn.com/privacy');
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        }
+                      },
                     ),
                     const Divider(color: AppColors.glassBorder, height: 1),
                     ListTile(
                       leading: const Icon(Icons.article_rounded, color: AppColors.primaryCyan),
                       title: const Text('Terms of Service', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
                       trailing: const Icon(Icons.open_in_new_rounded, color: AppColors.textMuted, size: 18),
-                      onTap: () {},
+                      onTap: () async {
+                        final Uri url = Uri.parse('https://baruavpn.com/terms');
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        }
+                      },
                     ),
                     const Divider(color: AppColors.glassBorder, height: 1),
                     ListTile(
