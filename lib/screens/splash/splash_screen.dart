@@ -45,12 +45,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     await Future.delayed(const Duration(milliseconds: 2200));
     if (!mounted) return;
 
-    final user = ref.read(authRepositoryProvider).currentUser;
-    if (user != null) {
-      context.go('/home');
-    } else {
-      context.go('/onboarding');
-    }
+    // We removed login/onboarding so go straight to home
+    context.go('/home');
   }
 
   @override
