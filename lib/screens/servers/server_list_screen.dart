@@ -147,11 +147,6 @@ class ServerListScreen extends ConsumerWidget {
                               server: server,
                               isSelected: isSelected,
                               onTap: () async {
-                                if (server.isPremium && !isUserPremium) {
-                                  _showPremiumUpgradePrompt(context);
-                                  return;
-                                }
-
                                 await ref.read(selectedServerProvider.notifier).selectServer(server);
 
                                 // If connected, automatically reconnect or update active tunnel

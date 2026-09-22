@@ -151,45 +151,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         onPressed: () => context.push('/speed-test'),
                       ),
 
-                      // Premium Badge / Upgrade button
-                      GestureDetector(
-                        onTap: () => context.push('/premium'),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            gradient: isPremium
-                                ? const LinearGradient(colors: [Color(0xFFFFD700), Color(0xFFFFA000)])
-                                : AppColors.primaryGradient,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: (isPremium ? const Color(0xFFFFD700) : AppColors.primaryCyan).withOpacity(0.35),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                isPremium ? Icons.workspace_premium_rounded : Icons.bolt_rounded,
-                                color: Colors.black,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                isPremium ? 'PRO' : 'GO PRO',
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
                       const SizedBox(width: 6),
 
                       // Profile
