@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/settings_provider.dart';
+import '../../providers/split_tunnel_provider.dart';
 import '../../widgets/glass_card.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -85,16 +86,22 @@ class SettingsScreen extends ConsumerWidget {
                     const Divider(color: AppColors.glassBorder, height: 1),
 
                     // Split Tunneling
-                    SwitchListTile(
-                      secondary: const Icon(Icons.call_split_rounded, color: AppColors.electricViolet),
+                    ListTile(
+                      leading: const Icon(Icons.call_split_rounded, color: AppColors.electricViolet),
                       title: const Text('Split Tunneling', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
-                      subtitle: const Text(
-                        'Choose which apps bypass the VPN tunnel',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                      subtitle: Consumer(
+                        builder: (ctx, ref, _) {
+                          final excluded = ref.watch(splitTunnelProvider);
+                          return Text(
+                            excluded.isEmpty
+                                ? 'All apps use the VPN tunnel'
+                                : '${excluded.length} app${excluded.length == 1 ? '' : 's'} bypassing VPN',
+                            style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                          );
+                        },
                       ),
-                      value: settings.isSplitTunnel,
-                      activeColor: AppColors.primaryCyan,
-                      onChanged: (val) => notifier.toggleSplitTunnel(val),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
+                      onTap: () => context.push('/split-tunnel'),
                     ),
                   ],
                 ),

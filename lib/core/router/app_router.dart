@@ -6,6 +6,7 @@ import '../../screens/servers/server_list_screen.dart';
 import '../../screens/connection/connection_details_screen.dart';
 import '../../screens/speed_test/speed_test_screen.dart';
 import '../../screens/settings/settings_screen.dart';
+import '../../screens/settings/split_tunnel_screen.dart';
 import '../../screens/support/support_screen.dart';
 
 class AppRouter {
@@ -40,6 +41,10 @@ class AppRouter {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/split-tunnel',
+        builder: (context, state) => const SplitTunnelScreen(),
       ),
       GoRoute(
         path: '/support',

@@ -5,6 +5,7 @@ import '../models/traffic_stats_model.dart';
 import '../models/vpn_state_model.dart';
 import 'core_providers.dart';
 import 'server_provider.dart';
+import 'split_tunnel_provider.dart';
 
 final vpnStateStreamProvider = StreamProvider<VpnConnectionState>((ref) {
   final repo = ref.watch(vpnRepositoryProvider);
@@ -68,7 +69,8 @@ class VpnController extends StateNotifier<VpnConnectionState> {
   }
 
   Future<void> connect(ServerModel server) async {
-    await ref.read(vpnRepositoryProvider).connect(server);
+    final excluded = ref.read(splitTunnelProvider).toList();
+    await ref.read(vpnRepositoryProvider).connect(server, excludedPackages: excluded);
   }
 
   Future<void> disconnect() async {
@@ -76,7 +78,8 @@ class VpnController extends StateNotifier<VpnConnectionState> {
   }
 
   Future<void> reconnect(ServerModel server) async {
-    await ref.read(vpnRepositoryProvider).reconnect(server);
+    final excluded = ref.read(splitTunnelProvider).toList();
+    await ref.read(vpnRepositoryProvider).reconnect(server, excludedPackages: excluded);
   }
 
   @override

@@ -11,9 +11,9 @@ abstract class VpnService {
   Stream<VpnStatus> get statusStream;
   Stream<TrafficStatsModel> get trafficStatsStream;
   Future<void> initialize();
-  Future<void> connect(ServerModel server);
+  Future<void> connect(ServerModel server, {List<String> excludedPackages = const []});
   Future<void> disconnect();
-  Future<void> reconnect(ServerModel server);
+  Future<void> reconnect(ServerModel server, {List<String> excludedPackages = const []});
   void dispose();
 }
 
@@ -83,7 +83,7 @@ class WireGuardVpnService implements VpnService {
   }
 
   @override
-  Future<void> connect(ServerModel server) async {
+  Future<void> connect(ServerModel server, {List<String> excludedPackages = const []}) async {
     _currentServer = server;
     _statusController.add(VpnStatus.connecting);
 
@@ -107,6 +107,7 @@ AllowedIPs = 0.0.0.0/0
 PersistentKeepalive = 25
 ''',
         providerBundleIdentifier: 'com.baruavpn.app.networkextension',
+        excludedPackages: excludedPackages.isEmpty ? null : excludedPackages,
       );
     } catch (e) {
       debugPrint('WireGuard native connect failed: $e');
@@ -135,11 +136,11 @@ PersistentKeepalive = 25
   }
 
   @override
-  Future<void> reconnect(ServerModel server) async {
+  Future<void> reconnect(ServerModel server, {List<String> excludedPackages = const []}) async {
     await disconnect();
     _reconnectTimer?.cancel();
     _reconnectTimer = Timer(const Duration(milliseconds: 500), () {
-      connect(server);
+      connect(server, excludedPackages: excludedPackages);
     });
   }
 

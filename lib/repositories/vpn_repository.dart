@@ -51,13 +51,13 @@ class VpnRepository {
     });
   }
 
-  Future<void> connect(ServerModel server) async {
+  Future<void> connect(ServerModel server, {List<String> excludedPackages = const []}) async {
     _currentState = _currentState.copyWith(
       status: VpnStatus.connecting,
       activeServer: server,
     );
     _vpnStateController.add(_currentState);
-    await vpnService.connect(server);
+    await vpnService.connect(server, excludedPackages: excludedPackages);
   }
 
   Future<void> disconnect() async {
@@ -68,13 +68,13 @@ class VpnRepository {
     await vpnService.disconnect();
   }
 
-  Future<void> reconnect(ServerModel server) async {
+  Future<void> reconnect(ServerModel server, {List<String> excludedPackages = const []}) async {
     _currentState = _currentState.copyWith(
       status: VpnStatus.connecting,
       activeServer: server,
     );
     _vpnStateController.add(_currentState);
-    await vpnService.reconnect(server);
+    await vpnService.reconnect(server, excludedPackages: excludedPackages);
   }
 
   void dispose() {
