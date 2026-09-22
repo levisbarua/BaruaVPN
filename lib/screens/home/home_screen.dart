@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/vpn_state_model.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/core_providers.dart';
 import '../../providers/server_provider.dart';
 import '../../providers/vpn_provider.dart';
 import '../../services/update_service.dart';
@@ -37,15 +37,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final selectedServer = ref.watch(selectedServerProvider);
     final trafficStatsAsync = ref.watch(trafficStatsStreamProvider);
     final durationAsync = ref.watch(vpnDurationProvider);
-    final currentUserAsync = ref.watch(authNotifierProvider);
 
     final isConnected = vpnState.status == VpnStatus.connected;
     final isConnecting = vpnState.status == VpnStatus.connecting;
 
     final trafficStats = trafficStatsAsync.value;
     final duration = durationAsync.value ?? Duration.zero;
-    final currentUser = currentUserAsync.value;
-    final isPremium = currentUser?.isPremium ?? false;
+    final isPremium = true;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -153,13 +151,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                       const SizedBox(width: 6),
 
-                      // Profile
-                      IconButton(
-                        icon: const Icon(Icons.person_outline_rounded, color: AppColors.textSecondary, size: 22),
-                        onPressed: () => context.push('/profile'),
-                      ),
 
-                      // Settings
                       IconButton(
                         icon: const Icon(Icons.settings_outlined, color: AppColors.textSecondary, size: 22),
                         onPressed: () => context.push('/settings'),

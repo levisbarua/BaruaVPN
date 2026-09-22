@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/server_model.dart';
 import '../../models/vpn_state_model.dart';
-import '../../providers/auth_provider.dart';
 import '../../providers/core_providers.dart';
 import '../../providers/server_provider.dart';
 import '../../providers/vpn_provider.dart';
@@ -19,8 +18,6 @@ class ServerListScreen extends ConsumerWidget {
     final selectedServer = ref.watch(selectedServerProvider);
     final currentTab = ref.watch(serverTabFilterProvider);
     final vpnState = ref.watch(vpnControllerProvider);
-    final currentUser = ref.watch(authNotifierProvider).value;
-    final isUserPremium = currentUser?.isPremium ?? false;
 
     return Scaffold(
       backgroundColor: AppColors.background,

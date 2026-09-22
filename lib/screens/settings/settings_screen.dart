@@ -28,48 +28,6 @@ class SettingsScreen extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             children: [
-              // User Account shortcut banner
-              GlassCard(
-                onTap: () => context.push('/profile'),
-                borderRadius: 20,
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.surfaceDark,
-                      ),
-                      child: const Icon(Icons.person_rounded, color: AppColors.primaryCyan),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Account & Subscription',
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            'View profile and bandwidth limits',
-                            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
               // Section: VPN Protocol & Security
               const Padding(
                 padding: EdgeInsets.only(left: 4, bottom: 8),
