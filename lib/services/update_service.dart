@@ -9,42 +9,8 @@ class UpdateService {
   static const String githubRepo = 'levisbarua/BaruaVPN';
 
   static Future<void> checkForUpdates(BuildContext context) async {
-    try {
-      final response = await http.get(
-        Uri.parse('https://api.github.com/repos/$githubRepo/releases/latest'),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final latestVersionTag = data['tag_name'] as String; // e.g. "v1.0.0.0.1"
-        final latestVersion = latestVersionTag.replaceAll('v', '');
-        
-        final packageInfo = await PackageInfo.fromPlatform();
-        final currentVersion = packageInfo.version;
-
-        if (_isNewerVersion(currentVersion, latestVersion)) {
-          // Find the APK asset URL
-          String? apkUrl;
-          if (data['assets'] != null) {
-            for (var asset in data['assets']) {
-              if (asset['name'].toString().endsWith('.apk')) {
-                apkUrl = asset['browser_download_url'];
-                break;
-              }
-            }
-          }
-          
-          // If no direct APK link, just link to the release page
-          final downloadUrl = apkUrl ?? data['html_url'];
-
-          if (context.mounted) {
-            _showUpdateDialog(context, latestVersion, downloadUrl, data['body'] ?? 'Bug fixes and improvements.');
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('Error checking for updates: $e');
-    }
+    // Disabled as requested
+    return;
   }
 
   static bool _isNewerVersion(String currentVersion, String latestVersion) {
