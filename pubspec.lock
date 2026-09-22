@@ -105,6 +105,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.9"
+  dart_ping:
+    dependency: "direct main"
+    description:
+      name: dart_ping
+      sha256: "91b45954dbb7f3dc51633ba0c1b939df9dbe141f083d047fc87cfb5932e59f38"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.0.1"
   dbus:
     dependency: transitive
     description:

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:dart_ping/dart_ping.dart';
 import '../models/speed_test_model.dart';
 
 class SpeedTestService {
@@ -16,30 +17,30 @@ class SpeedTestService {
     );
     yield result;
 
-    // Stage 1: Measure Ping & Jitter
+    // Stage 1: Measure Ping & Jitter using actual ICMP Pings via dart_ping
     final pings = <int>[];
     const testTargets = [
-      'https://1.1.1.1',
-      'https://www.cloudflare.com',
-      'https://dns.google',
+      '1.1.1.1',
+      '8.8.8.8',
     ];
 
     for (int i = 0; i < testTargets.length; i++) {
-      final sw = Stopwatch()..start();
-      try {
-        await _dio.head(testTargets[i]);
-        sw.stop();
-        pings.add(sw.elapsedMilliseconds);
-      } catch (_) {
-        if (pings.isEmpty) pings.add(50);
+      final ping = Ping(testTargets[i], count: 2, timeout: 2);
+      await for (final event in ping.stream) {
+        if (event is PingResponse && event.time != null) {
+          pings.add(event.time!.inMilliseconds);
+          result = result.copyWith(
+            pingMs: pings.last,
+            currentGaugeValue: pings.last.toDouble(),
+            progress: 0.1 + (pings.length * 0.05),
+          );
+          yield result;
+        }
       }
-      result = result.copyWith(
-        pingMs: pings.last,
-        currentGaugeValue: pings.last.toDouble(),
-        progress: 0.1 + (i * 0.08),
-      );
-      yield result;
-      await Future.delayed(const Duration(milliseconds: 100));
+    }
+    
+    if (pings.isEmpty) {
+      pings.add(50);
     }
 
     final avgPing = (pings.reduce((a, b) => a + b) / pings.length).round();
@@ -106,9 +107,6 @@ class SpeedTestService {
       double currentSpeed = 0.0;
       int sentTracker = 0;
 
-      // To yield upload progress in an async* stream using Dio, it's easier to upload in chunks
-      // But standard Dio POST with large payload tracks via onSendProgress.
-      // We will bridge onSendProgress to our stream using a local variable and periodic yields.
       bool isUploading = true;
       _dio.post(
         'https://speed.cloudflare.com/__up',
