@@ -82,6 +82,10 @@ class WireGuardVpnService implements VpnService {
     }
   }
 
+  // Hardcoded private DNS — Cloudflare (no logging policy).
+  // These are the ONLY resolvers the TUN interface will see.
+  static const _dnsServers = ['1.1.1.1', '1.0.0.1'];
+
   @override
   Future<void> connect(ServerModel server, {List<String> excludedPackages = const []}) async {
     _currentServer = server;
@@ -92,22 +96,26 @@ class WireGuardVpnService implements VpnService {
       final endpoint = server.endpoint;
       final publicKey = server.publicKey;
       final privateKey = server.privateKey;
+      final dns = _dnsServers.join(', ');
 
       await _wireGuard.startVpn(
         serverAddress: endpoint,
+        // AllowedIPs = 0.0.0.0/0, ::/0 — full-tunnel for IPv4 AND IPv6.
+        // This prevents IPv6 DNS from leaking outside the VPN.
         wgQuickConfig: '''[Interface]
 PrivateKey = $privateKey
 Address = $clientIpv4
-DNS = 1.1.1.1, 10.2.0.1
+DNS = $dns
 
 [Peer]
 PublicKey = $publicKey
 Endpoint = $endpoint
-AllowedIPs = 0.0.0.0/0
+AllowedIPs = 0.0.0.0/0, ::/0
 PersistentKeepalive = 25
 ''',
         providerBundleIdentifier: 'com.baruavpn.app.networkextension',
         excludedPackages: excludedPackages.isEmpty ? null : excludedPackages,
+        dnsServers: _dnsServers,
       );
     } catch (e) {
       debugPrint('WireGuard native connect failed: $e');

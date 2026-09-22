@@ -141,7 +141,8 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             "initialize" -> setupTunnel(call.argument<String>("localizedDescription").toString(), result)
             "start" -> {
                 val excludedPackages: List<String> = call.argument<List<String>>("excludedPackages") ?: emptyList()
-                connect(call.argument<String>("wgQuickConfig").toString(), excludedPackages, result)
+                val dnsServers: List<String> = call.argument<List<String>>("dnsServers") ?: listOf("1.1.1.1", "1.0.0.1")
+                connect(call.argument<String>("wgQuickConfig").toString(), excludedPackages, dnsServers, result)
 
                 if (!isVpnChecked) {
                     if (isVpnActive()) {
@@ -229,7 +230,7 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         }
     }
 
-    private fun connect(wgQuickConfig: String, excludedPackages: List<String>, result: Result) {
+    private fun connect(wgQuickConfig: String, excludedPackages: List<String>, dnsServers: List<String>, result: Result) {
         scope.launch(Dispatchers.IO) {
             try {
                 if (!havePermission) {
@@ -238,17 +239,26 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 }
                 updateStage("prepare")
 
-                // Build the final config string, injecting ExcludedApplications
-                val finalConfig = if (excludedPackages.isNotEmpty()) {
-                    val exclusionLine = "ExcludedApplications = ${excludedPackages.joinToString(", ")}"
-                    // Insert after [Interface] header
-                    wgQuickConfig.replace(
-                        "[Interface]",
-                        "[Interface]\n$exclusionLine"
-                    )
+                // Step 1: Enforce private DNS servers to prevent DNS leaks.
+                // Replaces any existing DNS line(s) in the [Interface] block with our enforced servers.
+                var finalConfig = wgQuickConfig
+                val dnsLine = "DNS = ${dnsServers.joinToString(", ")}"
+                finalConfig = if (Regex("^DNS\\s*=.*", RegexOption.MULTILINE).containsMatchIn(finalConfig)) {
+                    // Override any existing DNS declaration
+                    finalConfig.replace(Regex("^DNS\\s*=.*", RegexOption.MULTILINE), dnsLine)
                 } else {
-                    wgQuickConfig
+                    // Insert after [Interface] header if none present
+                    finalConfig.replace("[Interface]", "[Interface]\n$dnsLine")
                 }
+
+                // Step 2: Inject ExcludedApplications for split tunneling
+                if (excludedPackages.isNotEmpty()) {
+                    val exclusionLine = "ExcludedApplications = ${excludedPackages.joinToString(", ")}"
+                    finalConfig = finalConfig.replace("[Interface]", "[Interface]\n$exclusionLine")
+                }
+
+                Log.i(TAG, "DNS Leak Protection: enforcing DNS=$dnsServers")
+                Log.i(TAG, "Split Tunnel: excluded=${excludedPackages.size} apps")
 
                 val inputStream = ByteArrayInputStream(finalConfig.toByteArray())
                 config = com.wireguard.config.Config.parse(inputStream)
@@ -261,7 +271,7 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                         }
                     }, Tunnel.State.UP, config
                 )
-                Log.i(TAG, "Connect - success! Excluded: $excludedPackages")
+                Log.i(TAG, "Connect - success!")
                 flutterSuccess(result, "")
             } catch (e: BackendException) {
                 Log.e(TAG, "Connect - BackendException - ERROR - ${e.reason}", e)

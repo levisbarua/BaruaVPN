@@ -44,12 +44,14 @@ class WireGuardFlutter extends WireGuardFlutterInterface {
     required String wgQuickConfig,
     required String providerBundleIdentifier,
     List<String>? excludedPackages,
+    List<String>? dnsServers,
   }) async {
     return _instance.startVpn(
       serverAddress: serverAddress,
       wgQuickConfig: wgQuickConfig,
       providerBundleIdentifier: providerBundleIdentifier,
       excludedPackages: excludedPackages,
+      dnsServers: dnsServers,
     );
   }
 

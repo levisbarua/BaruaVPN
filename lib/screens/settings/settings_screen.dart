@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:android_intent_plus/android_intent.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/settings_provider.dart';
@@ -57,17 +58,16 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     const Divider(color: AppColors.glassBorder, height: 1),
 
-                    // Kill Switch
-                    SwitchListTile(
-                      secondary: const Icon(Icons.gpp_bad_rounded, color: AppColors.softBlue),
+                    // Kill Switch — OS-level guide
+                    ListTile(
+                      leading: const Icon(Icons.gpp_bad_rounded, color: AppColors.softBlue),
                       title: const Text('Kill Switch', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
                       subtitle: const Text(
-                        'Block internet traffic if VPN drops unexpectedly',
+                        'Block all traffic if VPN drops unexpectedly',
                         style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                       ),
-                      value: settings.isKillSwitch,
-                      activeColor: AppColors.primaryCyan,
-                      onChanged: (val) => notifier.toggleKillSwitch(val),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
+                      onTap: () => _showKillSwitchGuide(context),
                     ),
                     const Divider(color: AppColors.glassBorder, height: 1),
 
@@ -102,6 +102,27 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                       trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
                       onTap: () => context.push('/split-tunnel'),
+                    ),
+                    const Divider(color: AppColors.glassBorder, height: 1),
+
+                    // DNS Leak Protection — always active indicator
+                    ListTile(
+                      leading: const Icon(Icons.dns_rounded, color: AppColors.connectedGreen),
+                      title: const Text('DNS Leak Protection', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
+                      subtitle: const Text(
+                        'Cloudflare 1.1.1.1 / 1.0.0.1  •  no-log policy',
+                        style: TextStyle(color: AppColors.connectedGreen, fontSize: 12),
+                      ),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.connectedGreen.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text('ACTIVE',
+                          style: TextStyle(color: AppColors.connectedGreen, fontWeight: FontWeight.bold, fontSize: 11),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -266,6 +287,143 @@ class SettingsScreen extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+
+  void _showKillSwitchGuide(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surfaceDark,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.softBlue.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(Icons.gpp_bad_rounded, color: AppColors.softBlue, size: 28),
+                ),
+                const SizedBox(width: 14),
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Kill Switch', style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text('OS-level traffic protection', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.glassSurface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.glassBorder),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('How it works', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 14)),
+                  SizedBox(height: 8),
+                  Text(
+                    'Android\'s built-in "Always-on VPN + Block connections without VPN" feature acts as a kill switch at the OS level. '
+                    'If the VPN tunnel drops, Android immediately blocks ALL internet traffic — no app can bypass it.',
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.5),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.primaryCyan.withOpacity(0.07),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.primaryCyan.withOpacity(0.2)),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Setup guide', style: TextStyle(color: AppColors.primaryCyan, fontWeight: FontWeight.bold, fontSize: 14)),
+                  SizedBox(height: 8),
+                  _StepRow(step: '1', text: 'Tap "Open VPN Settings" below'),
+                  SizedBox(height: 6),
+                  _StepRow(step: '2', text: 'Tap the ⚙ gear icon next to Barua VPN'),
+                  SizedBox(height: 6),
+                  _StepRow(step: '3', text: 'Enable "Always-on VPN"'),
+                  SizedBox(height: 6),
+                  _StepRow(step: '4', text: 'Enable "Block connections without VPN"'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.settings_rounded),
+                label: const Text('Open VPN Settings'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryCyan,
+                  foregroundColor: AppColors.backgroundDark,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    const intent = AndroidIntent(
+                      action: 'android.settings.VPN_SETTINGS',
+                    );
+                    await intent.launch();
+                  } catch (e) {
+                    debugPrint('Could not open VPN settings: $e');
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StepRow extends StatelessWidget {
+  final String step;
+  final String text;
+  const _StepRow({required this.step, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 22,
+          height: 22,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.primaryCyan.withOpacity(0.15),
+            shape: BoxShape.circle,
+          ),
+          child: Text(step, style: const TextStyle(color: AppColors.primaryCyan, fontSize: 11, fontWeight: FontWeight.bold)),
+        ),
+        const SizedBox(width: 10),
+        Expanded(child: Text(text, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13))),
+      ],
     );
   }
 }

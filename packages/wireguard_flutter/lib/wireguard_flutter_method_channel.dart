@@ -35,12 +35,14 @@ class WireGuardFlutterMethodChannel extends WireGuardFlutterInterface {
     required String wgQuickConfig,
     required String providerBundleIdentifier,
     List<String>? excludedPackages,
+    List<String>? dnsServers,
   }) {
     return _methodChannel.invokeMethod("start", {
       "serverAddress": serverAddress,
       "wgQuickConfig": wgQuickConfig,
       "providerBundleIdentifier": providerBundleIdentifier,
       "excludedPackages": excludedPackages,
+      "dnsServers": dnsServers ?? ['1.1.1.1', '1.0.0.1'],
     });
   }
 
