@@ -18,14 +18,19 @@ class SupportScreen extends StatelessWidget {
           'WireGuard is an extremely modern, streamlined VPN protocol designed to run directly in kernel space. It uses a fraction of the code compared to legacy protocols like OpenVPN, offering dramatically faster handshake speeds, lower latency, and significantly improved mobile battery life.',
     },
     {
-      'question': 'How do Free vs PRO tiers work?',
+      'question': 'Is Barua VPN really free?',
       'answer':
-          'Free users receive 500 MB of high-speed secure bandwidth each day with access to standard country nodes. Barua VPN PRO users enjoy completely unlimited bandwidth, access to 10 Gbps streaming and gaming nodes across all 9+ countries, and zero throttles.',
+          'Yes! Barua VPN is 100% free for everyone. There are no bandwidth limits, no speed throttles, and no sign-ups required. We provide high-speed, secure nodes globally without forcing you into premium tiers.',
     },
     {
       'question': 'What does the Kill Switch do?',
       'answer':
           'The Kill Switch acts as an automatic safety fail-safe. If your VPN connection drops unexpectedly, it instantly shuts down internet access on your device so unencrypted packets never leak over public or unsecure networks.',
+    },
+    {
+      'question': 'Do you keep logs of my activity?',
+      'answer':
+          'No. Barua VPN operates on a strict No-Logs policy. We do not track, collect, or share your private data, browsing history, or DNS queries. Your privacy is our highest priority.',
     },
   ];
 

@@ -129,45 +129,6 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // Section: App Preferences
-              const Padding(
-                padding: EdgeInsets.only(left: 4, bottom: 8),
-                child: Text(
-                  'PREFERENCES',
-                  style: TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-              ),
-              GlassCard(
-                borderRadius: 20,
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.language_rounded, color: AppColors.primaryCyan),
-                      title: const Text('Language', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text('English (US)', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                          Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
-                        ],
-                      ),
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Language: English (US) active')),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
               // Section: Support & Legal
               const Padding(
                 padding: EdgeInsets.only(left: 4, bottom: 8),
@@ -211,6 +172,18 @@ class SettingsScreen extends ConsumerWidget {
                       trailing: const Icon(Icons.open_in_new_rounded, color: AppColors.textMuted, size: 18),
                       onTap: () async {
                         final Uri url = Uri.parse('https://baruavpn.com/terms');
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        }
+                      },
+                    ),
+                    const Divider(color: AppColors.glassBorder, height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.language_rounded, color: AppColors.primaryCyan),
+                      title: const Text('Official Website', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
+                      trailing: const Icon(Icons.open_in_new_rounded, color: AppColors.textMuted, size: 18),
+                      onTap: () async {
+                        final Uri url = Uri.parse('https://baruavpn.com');
                         if (await canLaunchUrl(url)) {
                           await launchUrl(url);
                         }
