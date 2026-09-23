@@ -147,15 +147,6 @@ class SettingsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Column(
                   children: [
-                    SwitchListTile(
-                      secondary: const Icon(Icons.dark_mode_rounded, color: AppColors.softBlue),
-                      title: const Text('Dark Mode', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
-                      subtitle: const Text('Cyber glassmorphism dark theme', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                      value: settings.isDarkMode,
-                      activeColor: AppColors.primaryCyan,
-                      onChanged: (val) => notifier.toggleDarkMode(val),
-                    ),
-                    const Divider(color: AppColors.glassBorder, height: 1),
                     ListTile(
                       leading: const Icon(Icons.language_rounded, color: AppColors.primaryCyan),
                       title: const Text('Language', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
