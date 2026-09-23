@@ -328,7 +328,7 @@ class SettingsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.glassSurface,
+                color: AppColors.glassFillDark,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.glassBorder),
               ),
@@ -376,7 +376,7 @@ class SettingsScreen extends ConsumerWidget {
                 label: const Text('Open VPN Settings'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryCyan,
-                  foregroundColor: AppColors.backgroundDark,
+                  foregroundColor: AppColors.background,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),

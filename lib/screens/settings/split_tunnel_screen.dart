@@ -34,10 +34,10 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
 
   Future<void> _loadApps() async {
     final apps = await InstalledApps.getInstalledApps(
-      true,  // exclude system apps
-      true,  // include app icon
+      excludeSystemApps: true,
+      excludeNonLaunchableApps: true,
+      withIcon: true,
     );
-    apps.sort((a, b) => (a.name ?? '').compareTo(b.name ?? ''));
     if (mounted) {
       setState(() {
         _apps = apps;
@@ -54,8 +54,8 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
           ? _apps
           : _apps
               .where((app) =>
-                  (app.name ?? '').toLowerCase().contains(query) ||
-                  (app.packageName ?? '').toLowerCase().contains(query))
+                  app.name.toLowerCase().contains(query) ||
+                  app.packageName.toLowerCase().contains(query))
               .toList();
     });
   }
@@ -66,7 +66,7 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
     final notifier = ref.read(splitTunnelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surfaceDark,
         elevation: 0,
@@ -91,7 +91,7 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
                 hintStyle: const TextStyle(color: AppColors.textMuted),
                 prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
                 filled: true,
-                fillColor: AppColors.glassSurface,
+                fillColor: AppColors.glassFillDark,
                 contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -108,16 +108,16 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: AppColors.primaryCyan.withOpacity(0.08),
+            color: AppColors.primaryCyan.withValues(alpha: 0.08),
             child: Row(
               children: [
                 const Icon(Icons.info_outline, color: AppColors.primaryCyan, size: 16),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Apps toggled ON will bypass the VPN tunnel and use your direct internet connection.',
+                    'Apps toggled ON bypass the VPN and use your direct connection.',
                     style: TextStyle(
-                      color: AppColors.primaryCyan.withOpacity(0.85),
+                      color: AppColors.primaryCyan.withValues(alpha: 0.85),
                       fontSize: 12,
                     ),
                   ),
@@ -147,19 +147,19 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
                   )
                 : _filtered.isEmpty
                     ? const Center(
-                        child: Text('No apps found', style: TextStyle(color: AppColors.textMuted)),
+                        child: Text('No apps found',
+                            style: TextStyle(color: AppColors.textMuted)),
                       )
                     : ListView.builder(
                         itemCount: _filtered.length,
                         itemBuilder: (context, index) {
                           final app = _filtered[index];
-                          final pkg = app.packageName ?? '';
-                          final isExcluded = excluded.contains(pkg);
+                          final isExcluded = excluded.contains(app.packageName);
 
                           return ListTile(
                             leading: _AppIcon(icon: app.icon),
                             title: Text(
-                              app.name ?? pkg,
+                              app.name,
                               style: const TextStyle(
                                 color: AppColors.textPrimary,
                                 fontSize: 15,
@@ -167,16 +167,17 @@ class _SplitTunnelScreenState extends ConsumerState<SplitTunnelScreen> {
                               ),
                             ),
                             subtitle: Text(
-                              pkg,
-                              style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+                              app.packageName,
+                              style: const TextStyle(
+                                  color: AppColors.textMuted, fontSize: 11),
                               overflow: TextOverflow.ellipsis,
                             ),
                             trailing: Switch(
                               value: isExcluded,
-                              activeColor: AppColors.primaryCyan,
-                              onChanged: (_) => notifier.toggle(pkg),
+                              activeThumbColor: AppColors.primaryCyan,
+                              onChanged: (_) => notifier.toggle(app.packageName),
                             ),
-                            onTap: () => notifier.toggle(pkg),
+                            onTap: () => notifier.toggle(app.packageName),
                           );
                         },
                       ),
@@ -196,17 +197,25 @@ class _AppIcon extends StatelessWidget {
     if (icon != null && icon!.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: Image.memory(icon!, width: 40, height: 40, fit: BoxFit.cover),
+        child: Image.memory(
+          icon!,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _placeholder(),
+        ),
       );
     }
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: AppColors.glassSurface,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: const Icon(Icons.android, color: AppColors.textMuted, size: 22),
-    );
+    return _placeholder();
   }
+
+  Widget _placeholder() => Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: AppColors.glassFillDark,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: const Icon(Icons.android, color: AppColors.textMuted, size: 22),
+      );
 }
