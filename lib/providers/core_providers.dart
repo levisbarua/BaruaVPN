@@ -9,6 +9,16 @@ import '../repositories/auth_repository.dart';
 import '../repositories/server_repository.dart';
 import '../repositories/vpn_repository.dart';
 import '../repositories/settings_repository.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+// App Info
+final appVersionProvider = FutureProvider<String>((ref) async {
+  final packageInfo = await PackageInfo.fromPlatform();
+  if (packageInfo.buildNumber.isEmpty || packageInfo.buildNumber == '0') {
+    return packageInfo.version;
+  }
+  return '${packageInfo.version} (${packageInfo.buildNumber})';
+});
 
 // Services
 final storageServiceProvider = Provider<StorageService>((ref) {

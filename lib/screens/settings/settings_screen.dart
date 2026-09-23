@@ -6,6 +6,7 @@ import 'package:android_intent_plus/android_intent.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/settings_provider.dart';
+import '../../providers/core_providers.dart';
 import '../../providers/split_tunnel_provider.dart';
 import '../../widgets/glass_card.dart';
 
@@ -193,10 +194,21 @@ class SettingsScreen extends ConsumerWidget {
                     ListTile(
                       leading: const Icon(Icons.info_outline_rounded, color: AppColors.textMuted),
                       title: const Text('App Version', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
-                      trailing: Text(
-                        AppConstants.appVersion,
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.bold),
-                      ),
+                      trailing: ref.watch(appVersionProvider).when(
+                            data: (version) => Text(
+                              version,
+                              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
+                            loading: () => const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primaryCyan),
+                            ),
+                            error: (_, __) => const Text(
+                              'Unknown',
+                              style: TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
+                          ),
                     ),
                   ],
                 ),
