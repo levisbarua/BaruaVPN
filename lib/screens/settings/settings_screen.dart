@@ -254,8 +254,19 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: Text(p['desc']!, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                   trailing: isSelected ? const Icon(Icons.check_circle_rounded, color: AppColors.primaryCyan) : null,
                   onTap: () {
-                    ref.read(settingsNotifierProvider.notifier).setProtocol(p['name']!);
-                    ctx.pop();
+                    if (p['name'] == 'WireGuard') {
+                      ref.read(settingsNotifierProvider.notifier).setProtocol(p['name']!);
+                      ctx.pop();
+                    } else {
+                      ctx.pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${p['name']} support is coming soon!'),
+                          backgroundColor: AppColors.primaryBlue,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   },
                 );
               }),
