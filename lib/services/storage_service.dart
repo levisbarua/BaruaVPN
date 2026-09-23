@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants/app_constants.dart';
-import '../models/user_model.dart';
 
 class StorageService {
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   late final SharedPreferences _prefs;
   bool _isInitialized = false;
 
@@ -14,41 +10,6 @@ class StorageService {
       _prefs = await SharedPreferences.getInstance();
       _isInitialized = true;
     }
-  }
-
-  // Auth Token
-  Future<void> saveToken(String token) async {
-    await _secureStorage.write(key: AppConstants.tokenKey, value: token);
-  }
-
-  Future<String?> getToken() async {
-    return await _secureStorage.read(key: AppConstants.tokenKey);
-  }
-
-  Future<void> clearToken() async {
-    await _secureStorage.delete(key: AppConstants.tokenKey);
-  }
-
-  // User Profile
-  Future<void> saveUser(UserModel user) async {
-    final userJson = jsonEncode(user.toJson());
-    await _prefs.setString(AppConstants.userKey, userJson);
-  }
-
-  UserModel? getUser() {
-    final str = _prefs.getString(AppConstants.userKey);
-    if (str == null) return null;
-    try {
-      final map = jsonDecode(str) as Map<String, dynamic>;
-      return UserModel.fromJson(map);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<void> clearUser() async {
-    await _prefs.remove(AppConstants.userKey);
-    await clearToken();
   }
 
   // Selected Server
@@ -84,9 +45,6 @@ class StorageService {
 
   bool getSplitTunnel() => _prefs.getBool(AppConstants.splitTunnelKey) ?? false;
   Future<void> setSplitTunnel(bool val) => _prefs.setBool(AppConstants.splitTunnelKey, val);
-
-  bool getDarkMode() => _prefs.getBool(AppConstants.darkModeKey) ?? true;
-  Future<void> setDarkMode(bool val) => _prefs.setBool(AppConstants.darkModeKey, val);
 
   String getProtocol() => _prefs.getString(AppConstants.selectedProtocolKey) ?? 'WireGuard';
   Future<void> setProtocol(String val) => _prefs.setString(AppConstants.selectedProtocolKey, val);

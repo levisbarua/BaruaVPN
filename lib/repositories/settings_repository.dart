@@ -5,9 +5,6 @@ class SettingsRepository {
 
   SettingsRepository({required this.storageService});
 
-  bool get isDarkMode => storageService.getDarkMode();
-  Future<void> setDarkMode(bool value) => storageService.setDarkMode(value);
-
   bool get isAutoConnect => storageService.getAutoConnect();
   Future<void> setAutoConnect(bool value) => storageService.setAutoConnect(value);
 

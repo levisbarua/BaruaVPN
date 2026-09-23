@@ -13,14 +13,6 @@ class NetworkException extends AppException {
   const NetworkException(super.message, {super.code, super.details});
 }
 
-class AuthException extends AppException {
-  const AuthException(super.message, {super.code, super.details});
-}
-
 class VpnException extends AppException {
   const VpnException(super.message, {super.code, super.details});
-}
-
-class SubscriptionException extends AppException {
-  const SubscriptionException(super.message, {super.code, super.details});
 }

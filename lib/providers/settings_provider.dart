@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core_providers.dart';
 
 class SettingsState {
-  final bool isDarkMode;
   final bool isAutoConnect;
   final bool isKillSwitch;
   final bool isSplitTunnel;
@@ -10,7 +9,6 @@ class SettingsState {
   final int dailyUsageBytes;
 
   const SettingsState({
-    this.isDarkMode = true,
     this.isAutoConnect = false,
     this.isKillSwitch = false,
     this.isSplitTunnel = false,
@@ -19,7 +17,6 @@ class SettingsState {
   });
 
   SettingsState copyWith({
-    bool? isDarkMode,
     bool? isAutoConnect,
     bool? isKillSwitch,
     bool? isSplitTunnel,
@@ -27,7 +24,6 @@ class SettingsState {
     int? dailyUsageBytes,
   }) {
     return SettingsState(
-      isDarkMode: isDarkMode ?? this.isDarkMode,
       isAutoConnect: isAutoConnect ?? this.isAutoConnect,
       isKillSwitch: isKillSwitch ?? this.isKillSwitch,
       isSplitTunnel: isSplitTunnel ?? this.isSplitTunnel,
@@ -47,18 +43,12 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   void _loadSettings() {
     final repo = ref.read(settingsRepositoryProvider);
     state = SettingsState(
-      isDarkMode: repo.isDarkMode,
       isAutoConnect: repo.isAutoConnect,
       isKillSwitch: repo.isKillSwitch,
       isSplitTunnel: repo.isSplitTunnel,
       protocol: repo.protocol,
       dailyUsageBytes: repo.dailyUsageBytes,
     );
-  }
-
-  Future<void> toggleDarkMode(bool value) async {
-    state = state.copyWith(isDarkMode: value);
-    await ref.read(settingsRepositoryProvider).setDarkMode(value);
   }
 
   Future<void> toggleAutoConnect(bool value) async {

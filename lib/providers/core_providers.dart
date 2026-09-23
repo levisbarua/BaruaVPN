@@ -1,11 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/storage_service.dart';
-import '../services/auth_service.dart';
 import '../services/vpn_service.dart';
 import '../services/api_service.dart';
 import '../services/speed_test_service.dart';
 import '../core/network/dio_client.dart';
-import '../repositories/auth_repository.dart';
 import '../repositories/server_repository.dart';
 import '../repositories/vpn_repository.dart';
 import '../repositories/settings_repository.dart';
@@ -35,10 +33,6 @@ final apiServiceProvider = Provider<ApiService>((ref) {
   return ApiService(dioClient: dioClient);
 });
 
-final authServiceProvider = Provider<AuthService>((ref) {
-  return FirebaseAuthService();
-});
-
 final vpnServiceProvider = Provider<VpnService>((ref) {
   return WireGuardVpnService();
 });
@@ -48,16 +42,6 @@ final speedTestServiceProvider = Provider<SpeedTestService>((ref) {
 });
 
 // Repositories
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final authService = ref.watch(authServiceProvider);
-  final storageService = ref.watch(storageServiceProvider);
-  final apiService = ref.watch(apiServiceProvider);
-  return AuthRepository(
-    authService: authService,
-    storageService: storageService,
-    apiService: apiService,
-  );
-});
 
 final serverRepositoryProvider = Provider<ServerRepository>((ref) {
   final apiService = ref.watch(apiServiceProvider);
