@@ -36,6 +36,8 @@ class WireGuardFlutterLinux extends WireGuardFlutterInterface {
     required String serverAddress,
     required String wgQuickConfig,
     required String providerBundleIdentifier,
+    List<String>? excludedPackages,
+    List<String>? dnsServers,
   }) async {
     final isAlreadyConnected = await isConnected();
     if (!isAlreadyConnected) {
