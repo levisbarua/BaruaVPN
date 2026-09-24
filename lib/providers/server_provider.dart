@@ -43,7 +43,7 @@ final filteredServersProvider = Provider<List<ServerModel>>((ref) {
 
   return serversAsync.maybeWhen(
     data: (servers) {
-      return servers.where((s) {
+      final filtered = servers.where((s) {
         // Tab filter
         if (filter == ServerTabFilter.free && s.isPremium) return false;
         if (filter == ServerTabFilter.premium && !s.isPremium) return false;
@@ -59,6 +59,9 @@ final filteredServersProvider = Provider<List<ServerModel>>((ref) {
 
         return true;
       }).toList();
+
+      filtered.sort((a, b) => a.pingMs.compareTo(b.pingMs));
+      return filtered;
     },
     orElse: () => [],
   );
