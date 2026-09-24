@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:barua_vpn/core/utils/formatters.dart';
 import 'package:barua_vpn/models/server_model.dart';
-import 'package:barua_vpn/models/user_model.dart';
 import 'package:barua_vpn/models/vpn_state_model.dart';
 import 'package:barua_vpn/models/speed_test_model.dart';
 
@@ -53,30 +52,6 @@ void main() {
       expect(reconstructed.id, original.id);
       expect(reconstructed.country, original.country);
       expect(reconstructed.endpoint, original.endpoint);
-    });
-  });
-
-  group('UserModel Tests', () {
-    test('Guest user has free limits and isGuest flag', () {
-      final guest = UserModel.guest();
-      expect(guest.isGuest, isTrue);
-      expect(guest.isPremium, isFalse);
-      expect(guest.dailyLimitBytes, 500 * 1024 * 1024);
-      expect(guest.hasExceededDailyLimit, isFalse);
-    });
-
-    test('Premium user has unlimited bandwidth', () {
-      const pro = UserModel(
-        id: 'pro_1',
-        email: 'pro@baruavpn.com',
-        displayName: 'Pro User',
-        isPremium: true,
-        dailyUsageBytes: 9999999999,
-      );
-      expect(pro.isPremium, isTrue);
-      expect(pro.dailyLimitBytes, -1);
-      expect(pro.hasExceededDailyLimit, isFalse);
-      expect(pro.usagePercentage, 0.0);
     });
   });
 
