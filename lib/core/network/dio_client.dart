@@ -24,18 +24,9 @@ class DioClient {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Attach auth token if available
-          final token = await storageService.getToken();
-          if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
-          if (e.response?.statusCode == 401) {
-            // Token expired; attempt token refresh or clear session
-            await storageService.clearToken();
-          }
           return handler.next(e);
         },
       ),
