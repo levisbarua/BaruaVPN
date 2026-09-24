@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:dart_ping/dart_ping.dart';
 import '../models/speed_test_model.dart';
 
 class SpeedTestService {
@@ -17,25 +16,32 @@ class SpeedTestService {
     );
     yield result;
 
-    // Stage 1: Measure Ping & Jitter using actual ICMP Pings via dart_ping
+    // Stage 1: Measure Ping & Jitter using HTTP requests (since ICMP is blocked on modern Android)
     final pings = <int>[];
     const testTargets = [
-      '1.1.1.1',
-      '8.8.8.8',
+      'https://1.1.1.1/cdn-cgi/trace',
+      'https://8.8.8.8',
+      'https://speed.cloudflare.com/cdn-cgi/trace',
     ];
 
     for (int i = 0; i < testTargets.length; i++) {
-      final ping = Ping(testTargets[i], count: 2, timeout: 2);
-      await for (final event in ping.stream) {
-        if (event is PingResponse && event.time != null) {
-          pings.add(event.time!.inMilliseconds);
-          result = result.copyWith(
-            pingMs: pings.last,
-            currentGaugeValue: pings.last.toDouble(),
-            progress: 0.1 + (pings.length * 0.05),
-          );
-          yield result;
-        }
+      final stopWatch = Stopwatch()..start();
+      try {
+        await _dio.get(
+          testTargets[i],
+          options: Options(receiveTimeout: const Duration(milliseconds: 2000)),
+        );
+        stopWatch.stop();
+        pings.add(stopWatch.elapsedMilliseconds);
+        
+        result = result.copyWith(
+          pingMs: pings.last,
+          currentGaugeValue: pings.last.toDouble(),
+          progress: 0.1 + (pings.length * 0.05),
+        );
+        yield result;
+      } catch (e) {
+        // ignore timeout or failure
       }
     }
     
