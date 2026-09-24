@@ -37,9 +37,6 @@ class StorageService {
   }
 
   // Settings
-  bool getAutoConnect() => _prefs.getBool(AppConstants.autoConnectKey) ?? false;
-  Future<void> setAutoConnect(bool val) => _prefs.setBool(AppConstants.autoConnectKey, val);
-
   bool getKillSwitch() => _prefs.getBool(AppConstants.killSwitchKey) ?? false;
   Future<void> setKillSwitch(bool val) => _prefs.setBool(AppConstants.killSwitchKey, val);
 

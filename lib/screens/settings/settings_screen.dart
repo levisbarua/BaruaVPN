@@ -72,19 +72,7 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     const Divider(color: AppColors.glassBorder, height: 1),
 
-                    // Auto Connect
-                    SwitchListTile(
-                      secondary: const Icon(Icons.wifi_protected_setup_rounded, color: AppColors.connectedGreen),
-                      title: const Text('Auto Connect', style: TextStyle(color: AppColors.textPrimary, fontSize: 15)),
-                      subtitle: const Text(
-                        'Connect automatically on untrusted public Wi-Fi',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                      ),
-                      value: settings.isAutoConnect,
-                      activeColor: AppColors.primaryCyan,
-                      onChanged: (val) => notifier.toggleAutoConnect(val),
-                    ),
-                    const Divider(color: AppColors.glassBorder, height: 1),
+
 
                     // Split Tunneling
                     ListTile(

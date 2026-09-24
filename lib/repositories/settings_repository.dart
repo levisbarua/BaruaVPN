@@ -5,9 +5,6 @@ class SettingsRepository {
 
   SettingsRepository({required this.storageService});
 
-  bool get isAutoConnect => storageService.getAutoConnect();
-  Future<void> setAutoConnect(bool value) => storageService.setAutoConnect(value);
-
   bool get isKillSwitch => storageService.getKillSwitch();
   Future<void> setKillSwitch(bool value) => storageService.setKillSwitch(value);
 

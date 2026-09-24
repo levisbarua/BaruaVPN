@@ -7,7 +7,6 @@ class AppConstants {
   // Storage Keys
   static const String selectedServerKey = 'selected_server_id';
   static const String favoriteServersKey = 'favorite_servers';
-  static const String autoConnectKey = 'setting_auto_connect';
   static const String killSwitchKey = 'setting_kill_switch';
   static const String splitTunnelKey = 'setting_split_tunnel';
   static const String selectedProtocolKey = 'setting_protocol';
